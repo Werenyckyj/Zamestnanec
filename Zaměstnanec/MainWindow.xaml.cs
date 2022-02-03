@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.Windows;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -12,23 +14,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.ComponentModel;
 using System.Threading;
 using System.Windows.Threading;
 using System.Globalization;
 
 namespace Zamestnanec
 {
-    /// <summary>
-    /// Interakční logika pro MainWindow.xaml
-    /// </summary>
-    class Worker : INotifyPropertyChanged
+    class Person : INotifyPropertyChanged
     {
-        private string _Jmeno, _Prijmeni, _Misto, _Plat;
         private DateTime _Narozeni;
+        private string _Jmeno, _Prijmeni;
+        private enum _Vzdelani { }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         public string Jmeno
         {
             get => _Jmeno;
@@ -36,7 +34,6 @@ namespace Zamestnanec
             {
                 _Jmeno = value;
                 OnPropertyChanged("Jmeno");
-                OnPropertyChanged("Status");
             }
         }
         public string Prijmeni
@@ -46,27 +43,6 @@ namespace Zamestnanec
             {
                 _Prijmeni = value;
                 OnPropertyChanged("Prijmeni");
-                OnPropertyChanged("Status");
-            }
-        }
-        public string Misto
-        {
-            get => _Misto;
-            set
-            {
-                _Misto = value;
-                OnPropertyChanged("Misto");
-                OnPropertyChanged("Status");
-            }
-        }
-        public string Plat
-        {
-            get => _Plat;
-            set
-            {
-                _Plat = value;
-                OnPropertyChanged("Plat");
-                OnPropertyChanged("Status");
             }
         }
         public DateTime Narozeni
@@ -76,10 +52,42 @@ namespace Zamestnanec
             {
                 _Narozeni = value;
                 OnPropertyChanged("Narozeni");
-                OnPropertyChanged("Status");
             }
         }
+        private void OnPropertyChanged(string property)
+        {
+            if (PropertyChanged != null) // jestli někdo poslouchá ...
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+    }
+    class Worker : Person
+    {
+        private string _Misto, _Plat;
 
+        public new event PropertyChangedEventHandler PropertyChanged;
+
+        public string Misto
+        {
+            get => _Misto;
+            set
+            {
+                _Misto = value;
+                OnPropertyChanged("Misto");
+            }
+        }
+        public string Plat
+        {
+            get => _Plat;
+            set
+            {
+                _Plat = value;
+                OnPropertyChanged("Plat");
+            }
+        }
+        public enum Vzdelani
+        {
+
+        }
         public string Status
         {
             get => Jmeno + " " + Prijmeni + " " + Narozeni.ToString();
@@ -99,19 +107,31 @@ namespace Zamestnanec
     }
     public partial class MainWindow : Window
     {
-        Worker z;
+        Worker z = new Worker();
         public MainWindow()
         {
             InitializeComponent();
-
-            DataContext = z = new Worker()
+            cbVz.Items.Add("Základní vzdělání");
+            cbVz.Items.Add("Středoškolské vzdělání");
+            cbVz.Items.Add("Vysokoškolské vzdělání");
+            for (int i = 2022; i < 1900 ; i--)
             {
-                Narozeni = DateTime.Now()
+                cbYe.Items.Add(i);
+            }
+            DataContext =
+            z = new Worker()
+            {
+                Narozeni = DateTime.Now
             };
         }
 
         private void btSave_Click(object sender, RoutedEventArgs e)
         {
+            using (StreamWriter x = new StreamWriter(@"Zaměstnanci.txt", true))
+            {
+                x.WriteLine($"{z.Jmeno}, {z.Prijmeni}, {z.Narozeni}, {z.Misto}, {z.Plat}");
+                x.Flush();
+            }
             z.Jmeno = z.Prijmeni = z.Misto = z.Plat = string.Empty;
             z.Narozeni = DateTime.Now;
         }
