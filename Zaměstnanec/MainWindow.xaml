@@ -30,7 +30,7 @@
         <TextBlock Text="Rok narození" Grid.Column="0" Grid.Row="2"/>
         <TextBlock Text="Nejvyšší dokončené vzdělání" Grid.Column="0" Grid.Row="3"/>
         <ComboBox  x:Name="cbVz" Grid.Column="1" Grid.Row="3" 
-                   Text="{Binding Prijmeni, Mode=TwoWay,UpdateSourceTrigger=LostFocus}" SelectedIndex="0"/>
+                   Text="{Binding Vzdelani, Mode=TwoWay,UpdateSourceTrigger=LostFocus}" SelectedIndex="0"/>
         <TextBlock Text="Pracovní pozice" Grid.Column="0" Grid.Row="4"/>
         <TextBox x:Name="work" Grid.Column="1" Grid.Row="4" 
                  Text="{Binding Misto, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>

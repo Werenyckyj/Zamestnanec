@@ -22,9 +22,7 @@ namespace Zamestnanec
 {
     class Person : INotifyPropertyChanged
     {
-        private DateTime _Narozeni;
-        private string _Jmeno, _Prijmeni;
-        private enum _Vzdelani { }
+        private string _Jmeno, _Prijmeni, _Rok;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public string Jmeno
@@ -45,12 +43,12 @@ namespace Zamestnanec
                 OnPropertyChanged("Prijmeni");
             }
         }
-        public DateTime Narozeni
+        public string Rok
         {
-            get => _Narozeni;
+            get => _Rok;
             set
             {
-                _Narozeni = value;
+                _Rok = value;
                 OnPropertyChanged("Narozeni");
             }
         }
@@ -62,7 +60,7 @@ namespace Zamestnanec
     }
     class Worker : Person
     {
-        private string _Misto, _Plat;
+        private string _Misto, _Plat, _Vzdelani;
 
         public new event PropertyChangedEventHandler PropertyChanged;
 
@@ -84,21 +82,15 @@ namespace Zamestnanec
                 OnPropertyChanged("Plat");
             }
         }
-        public enum Vzdelani
+        public string Vzdelani
         {
-
+            get => _Vzdelani;
+            set
+            {
+                _Vzdelani = value;
+                OnPropertyChanged("Vzdelani");
+            }
         }
-        public string Status
-        {
-            get => Jmeno + " " + Prijmeni + " " + Narozeni.ToString();
-        }
-
-        public override string ToString()
-        {
-            return Jmeno + " " + Prijmeni + " " + Narozeni.ToShortDateString();
-        }
-
-        // pomocná metoda pro informaci o změně v datech
         private void OnPropertyChanged(string property)
         {
             if (PropertyChanged != null) // jestli někdo poslouchá ...
@@ -114,26 +106,24 @@ namespace Zamestnanec
             cbVz.Items.Add("Základní vzdělání");
             cbVz.Items.Add("Středoškolské vzdělání");
             cbVz.Items.Add("Vysokoškolské vzdělání");
-            for (int i = 2022; i < 1900 ; i--)
+            for (int i = 2022; i > 1900 ; i--)
             {
                 cbYe.Items.Add(i);
             }
-            DataContext =
-            z = new Worker()
-            {
-                Narozeni = DateTime.Now
-            };
         }
+        public enum Rok
+        {
 
+        }
         private void btSave_Click(object sender, RoutedEventArgs e)
         {
             using (StreamWriter x = new StreamWriter(@"Zaměstnanci.txt", true))
             {
-                x.WriteLine($"{z.Jmeno}, {z.Prijmeni}, {z.Narozeni}, {z.Misto}, {z.Plat}");
+                x.WriteLine($"Jméno: {tbJmeno.Text}, Příjmení: {tbPrijmeni.Text}, Rok narození: {cbYe.SelectedItem}, Dosažené vzdělání: {cbVz.SelectedItem}, Pozice: {work.Text}, Plat: {money.Text}");
                 x.Flush();
             }
             z.Jmeno = z.Prijmeni = z.Misto = z.Plat = string.Empty;
-            z.Narozeni = DateTime.Now;
+
         }
     }
 }
